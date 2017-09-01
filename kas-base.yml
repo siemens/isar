@@ -1,0 +1,22 @@
+---
+header:
+  version: "0.10"
+
+target: multiconfig:qemuamd64-stretch:isar-image-base multiconfig:qemuarm-stretch:product-image
+
+repos:
+  isar:
+    layers:
+      meta:
+      meta-isar:
+
+bblayers_conf_header:
+  standard: |
+    LCONF_VERSION = "6"
+    BBPATH = "${TOPDIR}"
+    BBFILES ?= ""
+
+local_conf_header:
+  multiconfig: |
+    CONF_VERSION = "1"
+    BBMULTICONFIG = "qemuamd64-stretch qemuarm-stretch"
