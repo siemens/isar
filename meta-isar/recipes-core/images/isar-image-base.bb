@@ -41,7 +41,9 @@ do_rootfs() {
     sed -e 's|##IMAGE_PREINSTALL##|${IMAGE_PREINSTALL}|g' \
         -e 's|##DISTRO##|${DISTRO}|g' \
         -e 's|##DISTRO_APT_SOURCE##|${DISTRO_APT_SOURCE}|g' \
+        -e 's|##DISTRO_SEC_APT_SOURCE##|${DISTRO_SEC_APT_SOURCE}|g' \
         -e 's|##DISTRO_SUITE##|${DISTRO_SUITE}|g' \
+        -e 's|##DISTRO_SEC_SUITE##|${DISTRO_SEC_SUITE}|g' \
         -e 's|##DISTRO_COMPONENTS##|${DISTRO_COMPONENTS}|g' \
         -e 's|##CONFIG_SCRIPT##|./'"$WORKDIR_REL"'/${DISTRO_CONFIG_SCRIPT}|g' \
         -e 's|##SETUP_SCRIPT##|./'"$WORKDIR_REL"'/setup.sh|g' \
