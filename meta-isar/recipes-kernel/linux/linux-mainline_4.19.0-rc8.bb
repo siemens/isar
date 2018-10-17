@@ -8,10 +8,13 @@
 require recipes-kernel/linux/linux-custom.inc
 
 SRC_URI += " \
-    https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-${PV}.tar.xz \
+    https://git.kernel.org/torvalds/t/linux-4.19-rc8.tar.gz \
     file://x86_64_defconfig"
-SRC_URI[sha256sum] = "866a94c1c38d923ae18e74b683d7a8a79b674ebdfe7f40f1a3be9a27d39fe354"
+SRC_URI[sha256sum] = "365e2e43a8377044b3c771b5224ecaf9d80100b9247297ef168b44627f7e88f7"
 
-S = "${WORKDIR}/linux-${PV}"
+SRC_URI_append_de0-nano-soc = " \
+    file://0001-ARM-dts-socfpga-Rename-socfpga_cyclone5_de0_-sockit-.patch"
+
+S = "${WORKDIR}/linux-4.19-rc8"
 
 KERNEL_DEFCONFIG_qemuamd64 = "x86_64_defconfig"
