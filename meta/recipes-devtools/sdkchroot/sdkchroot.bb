@@ -49,12 +49,6 @@ SDK_PREINSTALL += " \
 
 S = "${WORKDIR}/rootfs"
 
-ROOTFS_CONFIGURE_COMMAND += "rootfs_configure_isar_apt_dir"
-rootfs_configure_isar_apt_dir() {
-    # Copy isar-apt instead of mounting:
-    sudo cp -Trpfx ${REPO_ISAR_DIR}/${DISTRO} ${ROOTFSDIR}/isar-apt
-}
-
 ROOTFS_POSTPROCESS_COMMAND =+ "sdkchroot_install_files"
 sdkchroot_install_files() {
     # Configure root filesystem
