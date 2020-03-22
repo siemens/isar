@@ -32,6 +32,14 @@ do_populate_sdk() {
         fi
     done
 
+    # Set up sysroot wrapper
+    for tool_pattern in "gcc-[0-9]*" "g++-[0-9]*" "cpp-[0-9]*" "ld.bfd" "ld.gold"; do
+        for tool in $(find ${SDKCHROOT_DIR}/usr/bin -type f -name "*-linux-gnu-${tool_pattern}"); do
+            sudo mv "${tool}" "${tool}.bin"
+            sudo ln -sf gcc-sysroot-wrapper.sh ${tool}
+        done
+    done
+
     # Copy mount_chroot.sh for convenience
     sudo cp ${ISARROOT}/scripts/mount_chroot.sh ${SDKCHROOT_DIR}
 
