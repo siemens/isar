@@ -309,10 +309,13 @@ isar_bootstrap() {
                              "${ROOTFSDIR}/etc/apt/apt.conf.d/50isar.conf"
             find ${APT_KEYS_DIR}/ -type f | while read keyfile
             do
-                kfn="$(basename $keyfile)"
+                export kfn="$(basename $keyfile)"
                 cp $keyfile "${ROOTFSDIR}/tmp/$kfn"
-                chroot "${ROOTFSDIR}" /usr/bin/apt-key \
-                   --keyring ${THIRD_PARTY_APT_KEYRING} add "/tmp/$kfn"
+                chroot "${ROOTFSDIR}" sh -c '
+                    for i in $(seq 10); do
+                        /usr/bin/apt-key --keyring ${THIRD_PARTY_APT_KEYRING} add "/tmp/$kfn" && break
+                        sleep 1
+                    done'
                 rm "${ROOTFSDIR}/tmp/$kfn"
             done
 
