@@ -505,3 +505,8 @@ IMAGE_PREINSTALL entries that doesn't refers to machine configuration, such as
 `expand-on-first-boot` or `sshd-regen-keys`.
 The configs are cleaned up now and this fact may force downstreams to modify
 their configuration if they relied on these packages.
+
+### Change OPTEE_BINARIES default ###
+
+Since OP-TEE 3.21, tee-raw.bin is produced for all platforms and is considered
+the better default option. `OPTEE_BINARIES` now uses this as default as well.
