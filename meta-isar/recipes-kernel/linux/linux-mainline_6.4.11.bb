@@ -1,7 +1,7 @@
 # Example recipe for building the mainline kernel
 #
 # This software is a part of ISAR.
-# Copyright (c) Siemens AG, 2018-2020
+# Copyright (c) Siemens AG, 2018-2023
 #
 # SPDX-License-Identifier: MIT
 
@@ -10,13 +10,13 @@ require recipes-kernel/linux/linux-custom.inc
 ARCHIVE_VERSION = "${@ d.getVar('PV')[:-2] if d.getVar('PV').endswith('.0') else d.getVar('PV') }"
 
 SRC_URI += " \
-    https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-${ARCHIVE_VERSION}.tar.xz \
+    https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-${ARCHIVE_VERSION}.tar.xz \
     file://x86_64_defconfig \
     file://ftpm-module.cfg \
     file://no-ubifs-fs.cfg \
     file://no-root-nfs.cfg;apply=no"
 
-SRC_URI[sha256sum] = "fc933f5b13066cfa54aacb5e86747a167bad1d8d23972e4a03ab5ee36c29798a"
+SRC_URI[sha256sum] = "546b68b5097d3c0d74722de62aae217729d98e45fbb6bd458b490ac21ea40918"
 
 S = "${WORKDIR}/linux-${ARCHIVE_VERSION}"
 
