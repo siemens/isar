@@ -1,0 +1,33 @@
+From 9f8b093d823de43c16ca8928218c397963086512 Mon Sep 17 00:00:00 2001
+From: Jason Kacines <j-kacines@ti.com>
+Date: Tue, 11 Jul 2023 16:20:46 -0500
+Subject: [PATCH 1/9] scripts: kconfig: Add config fragment support in
+ board/../
+
+Add support to config fragments (.config) located in the /board
+directory. This will allow only base defconfigs to live in /configs and
+all fragments to live in their respective device directory in /board/..
+
+Signed-off-by: Jason Kacines <j-kacines@ti.com>
+---
+ scripts/kconfig/Makefile | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/scripts/kconfig/Makefile b/scripts/kconfig/Makefile
+index 12e525ee31f..2d97aab8d21 100644
+--- a/scripts/kconfig/Makefile
++++ b/scripts/kconfig/Makefile
+@@ -99,7 +99,9 @@ endif
+ %_config: %_defconfig
+ 	@:
+ 
+-configfiles=$(wildcard $(srctree)/kernel/configs/$@ $(srctree)/arch/$(SRCARCH)/configs/$@)
++configfiles=$(wildcard $(srctree)/kernel/configs/$@ \
++		$(srctree)/arch/$(SRCARCH)/configs/$@ \
++		$(shell find $(srctree)/board -name "$@"))
+ 
+ %.config: $(obj)/conf
+ 	$(if $(call configfiles),, $(error No configuration exists for this target on this architecture))
+-- 
+2.35.3
+

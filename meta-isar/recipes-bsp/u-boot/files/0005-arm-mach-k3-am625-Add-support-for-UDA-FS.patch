@@ -1,0 +1,44 @@
+From e03c2a427ba8fb12d552671fde7994837dc3cf21 Mon Sep 17 00:00:00 2001
+From: Nishanth Menon <nm@ti.com>
+Date: Tue, 22 Aug 2023 20:41:30 +0200
+Subject: [PATCH 5/9] arm: mach-k3: am625: Add support for UDA FS
+
+While boot partition support with EMMC boot is useful, it is
+constrained by the size of boot hardware partition itself.
+
+In the case of K3 devices, tispl images can contain OP-TEE images that
+can substantially vary in size and the u-boot image itself can vary over
+time as we enable various features.
+
+So use the CSD information in the case of EMMC_BOOT configuration being
+enabled to pick boot partition or UDA FS mode operation to pick.
+
+If EMMC_BOOT is disabled, then depend on filesystem configuration to
+pick data from UDA.
+
+Signed-off-by: Nishanth Menon <nm@ti.com>
+---
+ arch/arm/mach-k3/am625_init.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/arch/arm/mach-k3/am625_init.c b/arch/arm/mach-k3/am625_init.c
+index 0e5d44269eb..ad61030a56f 100644
+--- a/arch/arm/mach-k3/am625_init.c
++++ b/arch/arm/mach-k3/am625_init.c
+@@ -228,7 +228,13 @@ u32 spl_mmc_boot_mode(struct mmc *mmc, const u32 boot_device)
+ 
+ 	switch (bootmode) {
+ 	case BOOT_DEVICE_EMMC:
++#if CONFIG_IS_ENABLED(SUPPORT_EMMC_BOOT)
++		return (spl_mmc_emmc_boot_partition(mmc) ? MMCSD_MODE_EMMCBOOT : MMCSD_MODE_FS);
++#elif defined(CONFIG_SPL_FS_FAT) || defined(CONFIG_SPL_FS_EXT4)
++		return MMCSD_MODE_FS;
++#else
+ 		return MMCSD_MODE_EMMCBOOT;
++#endif
+ 	case BOOT_DEVICE_MMC:
+ 		if (bootmode_cfg & MAIN_DEVSTAT_PRIMARY_MMC_FS_RAW_MASK)
+ 			return MMCSD_MODE_RAW;
+-- 
+2.35.3
+

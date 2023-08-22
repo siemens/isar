@@ -1,0 +1,56 @@
+From ff82909bfc42f6cf6a227d9caaf75fad52286a11 Mon Sep 17 00:00:00 2001
+From: Nishanth Menon <nm@ti.com>
+Date: Tue, 22 Aug 2023 20:41:28 +0200
+Subject: [PATCH 3/9] env_default: Allow CONFIG_EXTRA_ENV_TEXT to override
+ CFG_EXTRA_ENV_SETTINGS
+
+CFG_EXTRA_ENV_SETTINGS is set in common board config files, This allows
+for majority of the settings to be set in a common manner. However, the
+minor variations between various board can be addressed by the board.env
+files. The board.env files are converted into CONFIG_EXTRA_ENV_TEXT.
+
+However, this creates a minor problem. For example:
+distro_bootcmd.h and used by ti_armv7_common.h uses it as:
+ #define BOOT_TARGET_DEVICES(func) \
+	func(MMC, mmc, 0) \
+	func(MMC, mmc, 1)
+
+Which in turn generates:
+boot_targets=mmc0 mmc1
+
+And this probably works fine for most boards, However when the
+boot_targets need to be reversed, the preferred behavior would have been
+to define it in board.env file as:
+boot_targets=mmc1 mmc0
+
+By changing the order of the inclusion, we allow for the
+CONFIG_EXTRA_ENV_TEXT to have a higher priority in the definition.
+
+Signed-off-by: Nishanth Menon <nm@ti.com>
+---
+ include/env_default.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/include/env_default.h b/include/env_default.h
+index b16c22d5a28..714dfa9e845 100644
+--- a/include/env_default.h
++++ b/include/env_default.h
+@@ -112,12 +112,12 @@ const char default_environment[] = {
+ #ifdef CONFIG_MTDPARTS_DEFAULT
+ 	"mtdparts="	CONFIG_MTDPARTS_DEFAULT		"\0"
+ #endif
++#ifdef	CFG_EXTRA_ENV_SETTINGS
++	CFG_EXTRA_ENV_SETTINGS
++#endif
+ #ifdef CONFIG_EXTRA_ENV_TEXT
+ 	/* This is created in the Makefile */
+ 	CONFIG_EXTRA_ENV_TEXT
+-#endif
+-#ifdef	CFG_EXTRA_ENV_SETTINGS
+-	CFG_EXTRA_ENV_SETTINGS
+ #endif
+ 	"\0"
+ #else /* CONFIG_USE_DEFAULT_ENV_FILE */
+-- 
+2.35.3
+

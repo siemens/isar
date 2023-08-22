@@ -1,0 +1,133 @@
+From f12d78683c48e327bcae250691095c035e3dc468 Mon Sep 17 00:00:00 2001
+From: Nishanth Menon <nm@ti.com>
+Date: Tue, 22 Aug 2023 20:41:34 +0200
+Subject: [PATCH 9/9] board: ti: am62x: Add am62x_beagleplay_* defconfigs and
+ env file
+
+Add defconfig fragments for am625 based beagleplay and corresponding
+customized environment file for beagleplay.
+
+Signed-off-by: Nishanth Menon <nm@ti.com>
+---
+ board/ti/am62x/beagleplay.env        | 23 ++++++++++++
+ board/ti/am62x/beagleplay_a53.config | 55 ++++++++++++++++++++++++++++
+ board/ti/am62x/beagleplay_r5.config  | 15 ++++++++
+ 3 files changed, 93 insertions(+)
+ create mode 100644 board/ti/am62x/beagleplay.env
+ create mode 100644 board/ti/am62x/beagleplay_a53.config
+ create mode 100644 board/ti/am62x/beagleplay_r5.config
+
+diff --git a/board/ti/am62x/beagleplay.env b/board/ti/am62x/beagleplay.env
+new file mode 100644
+index 00000000000..8f39fb21433
+--- /dev/null
++++ b/board/ti/am62x/beagleplay.env
+@@ -0,0 +1,23 @@
++#include <env/ti/ti_armv7_common.env>
++#include <env/ti/mmc.env>
++
++default_device_tree=ti/k3-am625-beagleplay.dtb
++findfdt=
++	setenv name_fdt ${default_device_tree};
++	setenv fdtfile ${name_fdt}
++name_kern=Image
++console=ttyS2,115200n8
++args_all=setenv optargs ${optargs} earlycon=ns16550a,mmio32,0x02800000
++	${mtdparts}
++run_kern=booti ${loadaddr} ${rd_spec} ${fdtaddr}
++set_led_state_fail_load= led led-0 off; led led-1 on;
++	led led-2 off; led led-3 on; led led-4 off
++set_led_state_start_load=led led-0 on; led led-1 off;
++	led led-2 on; led led-3 off; led led-4 on
++boot=mmc
++mmcdev=1
++bootpart=1:1
++bootdir=/boot
++boot_targets=mmc1 mmc0 usb pxe
++bootmeths=extlinux efi
++rd_spec=-
+diff --git a/board/ti/am62x/beagleplay_a53.config b/board/ti/am62x/beagleplay_a53.config
+new file mode 100644
+index 00000000000..967f794446d
+--- /dev/null
++++ b/board/ti/am62x/beagleplay_a53.config
+@@ -0,0 +1,55 @@
++# Defconfig fragment to apply on top of am62x_evm_a53_defconfig
++
++CONFIG_DEFAULT_DEVICE_TREE="k3-am625-beagleplay"
++CONFIG_OF_LIST="k3-am625-beagleplay"
++CONFIG_SPL_OF_LIST="k3-am625-beagleplay"
++CONFIG_BOOTCOMMAND="run set_led_state_start_load;run findfdt; run envboot; run distro_bootcmd;run set_led_state_fail_load"
++CONFIG_EXT4_WRITE=y
++CONFIG_LZO=y
++CONFIG_AUTOBOOT_KEYED=y
++CONFIG_AUTOBOOT_PROMPT="Press SPACE to abort autoboot in %d seconds\n"
++CONFIG_AUTOBOOT_DELAY_STR="d"
++CONFIG_AUTOBOOT_STOP_STR=" "
++# Use the Beagleplay env file
++CONFIG_ENV_SOURCE_FILE="beagleplay"
++# Do not use emmc boot - we will use FS only
++CONFIG_SUPPORT_EMMC_BOOT=n
++CONFIG_MMC_IO_VOLTAGE=y
++# CONFIG_SPL_MMC_IO_VOLTAGE is not set
++CONFIG_MMC_UHS_SUPPORT=y
++# CONFIG_SPL_MMC_UHS_SUPPORT is not set
++CONFIG_MMC_HS200_SUPPORT=y
++# CONFIG_SPL_MMC_HS200_SUPPORT is not set
++# Enable GPIO control
++CONFIG_DM_GPIO=y
++CONFIG_SPL_GPIO=y
++CONFIG_DA8XX_GPIO=y
++CONFIG_CMD_GPIO=y
++CONFIG_CMD_GPIO_READ=y
++# Enable LEDs
++CONFIG_LED=y
++CONFIG_LED_GPIO=y
++CONFIG_SPL_LED=y
++CONFIG_SPL_LED_GPIO=y
++# Enable I2C bus
++CONFIG_SPL_I2C=y
++CONFIG_DM_I2C=y
++CONFIG_SYS_I2C_OMAP24XX=y
++CONFIG_CMD_I2C=y
++# Regulator
++CONFIG_DM_REGULATOR=y
++CONFIG_DM_REGULATOR_FIXED=y
++CONFIG_DM_REGULATOR_GPIO=y
++CONFIG_CMD_REGULATOR=y
++CONFIG_DM_REGULATOR_TPS65219=y
++CONFIG_DM_PMIC=y
++CONFIG_PMIC_TPS65219=y
++CONFIG_CMD_PMIC=y
++# Uses Realtek phy rather than TI phy
++CONFIG_PHY_TI_DP83867=n
++CONFIG_PHY_REALTEK=y
++# No SPI flash on Beagleplay
++CONFIG_SPI=n
++CONFIG_SPI_FLASH=n
++CONFIG_SPL_DM_SPI_FLASH=n
++CONFIG_SPL_SPI_FLASH_SUPPORT=n
+diff --git a/board/ti/am62x/beagleplay_r5.config b/board/ti/am62x/beagleplay_r5.config
+new file mode 100644
+index 00000000000..4ee0375a2a1
+--- /dev/null
++++ b/board/ti/am62x/beagleplay_r5.config
+@@ -0,0 +1,15 @@
++# Defconfig fragment to apply on top of:
++# am62x_evm_r5_defconfig
++#
++CONFIG_DEFAULT_DEVICE_TREE="k3-am625-r5-beagleplay"
++CONFIG_OF_LIST="k3-am625-r5-beagleplay"
++CONFIG_SPL_OF_LIST="k3-am625-r5-beagleplay"
++# Do spl board init
++CONFIG_SPL_BOARD_INIT=y
++# Do not use emmc boot - we will use FS only
++CONFIG_SUPPORT_EMMC_BOOT=n
++# No SPI flash on Beagleplay
++CONFIG_SPI=n
++CONFIG_SPI_FLASH=n
++CONFIG_SPL_DM_SPI_FLASH=n
++CONFIG_SPL_SPI_FLASH_SUPPORT=n
+-- 
+2.35.3
+
