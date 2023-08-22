@@ -5,5 +5,7 @@
 
 require u-boot-${PV}.inc
 
+COMPATIBLE_MACHINE = "de0-nano-soc"
+
 # Just for testing purposes, distro package would be recent enough
 U_BOOT_TOOLS_PACKAGE = "1"
