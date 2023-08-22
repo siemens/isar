@@ -12,6 +12,8 @@ DEBIAN_BUILD_DEPENDS .= ", libssl-dev:${DISTRO_ARCH}"
 # when cross compiling, we need the library on the host as well, as the signature computation is done locally
 DEBIAN_BUILD_DEPENDS .= "${@ ', libssl-dev:${HOST_ARCH}' if d.getVar('ISAR_CROSS_COMPILE') == '1' else '' }"
 
+COMPATIBLE_MACHINE = "starfive-visionfive2"
+
 U_BOOT_CONFIG = "starfive_visionfive2_defconfig"
 U_BOOT_BIN = "u-boot.bin"
 U_BOOT_SPL_BIN = "spl/u-boot-spl.bin"
