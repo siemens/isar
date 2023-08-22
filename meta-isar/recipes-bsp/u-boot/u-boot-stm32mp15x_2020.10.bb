@@ -5,6 +5,8 @@
 
 require u-boot-${PV}.inc
 
+COMPATIBLE_MACHINE = "stm32mp15x"
+
 SRC_URI += " \
     file://0001-fdtdec-optionally-add-property-no-map-to-created-res.patch \
     file://0002-optee-add-property-no-map-to-secure-reserved-memory.patch"

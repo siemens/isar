@@ -10,6 +10,8 @@ S = "${WORKDIR}/optee_os-${PV}"
 
 DEBIAN_BUILD_DEPENDS += ", device-tree-compiler, python3-cryptography:native"
 
+COMPATIBLE_MACHINE = "stm32mp15x"
+
 OPTEE_PLATFORM = "stm32mp1"
 OPTEE_EXTRA_BUILDARGS = " \
     TEE_IMPL_VERSION=${PV} \
