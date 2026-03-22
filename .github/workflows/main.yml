@@ -18,10 +18,10 @@ jobs:
       contents: read
       attestations: write
       artifact-metadata: write
-    if: github.ref == 'refs/heads/next'
     steps:
       - name: Check out repo
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        if: github.ref == 'refs/heads/next'
 
       - name: Check for pre-existing container version
         run: |
@@ -32,6 +32,7 @@ jobs:
               echo "KAS_VERSION=$KAS_CONTAINER_SCRIPT_VERSION" >> $GITHUB_ENV
               echo "BUILD_CONTAINER=true" >> $GITHUB_ENV
           fi
+        if: github.ref == 'refs/heads/next'
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@ce360397dd3f832beb865e1373c09c0e9f86d70a  # v4.0.0
@@ -70,3 +71,31 @@ jobs:
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
         if: ${{ env.BUILD_CONTAINER }}
+
+  test:
+    name: Run tests
+    runs-on: ubuntu-latest
+    needs: container
+    strategy:
+      matrix:
+        tests: [
+          {name: 'test_dev',
+           spec: 'testsuite/citest.py:test_dev$ testsuite/citest.py:test_dev_run_arm_'},
+          {name: 'test_dev_apps',
+           spec: 'testsuite/citest.py:test_dev_apps testsuite/citest.py:test_dev_rebuild testsuite/citest.py:test_dev_run_amd64_ testsuite/citest.py:test_dev_run_arm64_'}
+        ]
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+      - name: Execute run-tests.sh
+        run: |
+          scripts/run-tests.sh --debug ${{ matrix.tests.spec }}
+      - name: Upload logs
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f  # v7.0.0
+        if: always()
+        with:
+          name: logs-${{ matrix.tests.name }}
+          path: |
+            build/testsuite/tmp*/work/*/*/*/temp
+            build/testsuite/job-results
+            build/testsuite/vm_start
